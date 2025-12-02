@@ -11,12 +11,22 @@ import { Avatar, AvatarFallback } from '../ui/avatar'
 import { logoutUser } from '@/store/auth-slice'
 import UserCartWrapper from './cart-wrapper'
 import { fetchCartItems } from '@/store/shop/cart-slice'
+import { Label } from '../ui/label'
 
 const MenuItems = ()=>{
+  const navigate = useNavigate()
+  const handleNavigate = (getCurrentItem)=>{
+    sessionStorage.removeItem('filters')
+    const currentFilter = getCurrentItem.id !== 'home' ? {
+      category : [getCurrentItem.id]
+    } : null
+    sessionStorage.setItem('filters',JSON.stringify(currentFilter))
+     navigate(getCurrentItem.path ) 
+  }
   return <nav className='flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row'>
   {
-    shoppingViewHeaderMenuItems.map(menuItems => <Link 
-    className='text-sm font-medium'  key={menuItems.id} to={menuItems.path}>{menuItems.label} </Link>)
+    shoppingViewHeaderMenuItems.map(menuItems => <Label onClick={()=> handleNavigate(menuItems)} 
+    className='text-sm font-medium cursor-pointer'  key={menuItems.id} >{menuItems.label} </Label>)
     }
   </nav>
 }

@@ -166,7 +166,7 @@ export const productFilterOptions = {
     { label: "Puma", id: "puma" },
     { label: "Levi's", id: "levis" },
     { label: "Zara", id: "zara" },
-    { label: "H&M", id: "h&m" },
+    { label: "H&M", id: "hm" },
   ],
 };
 
