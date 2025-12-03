@@ -2,8 +2,8 @@ import React from 'react'
 
 const ShopingCheckout= () => {
   return (
-    <div>
-      This is Shoping Checkout
+    <div className='flex flex-col'>
+      
     </div>
   )
 }

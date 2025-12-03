@@ -5,6 +5,7 @@ import { addressForm } from "@/config";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewAddress, deleteAddress, editAddress, fetchAllAddress } from "@/store/shop/Address-slice";
 import AddressCart from "./addressCart";
+import { toast } from "sonner";
 
 const initialAddressFormData = {
   address: "",
@@ -25,33 +26,50 @@ const Address = () => {
     
     
     const handleMangeAddress = (e) => {
-        e.preventDefault();
-        
-        currentEditedId !== null ? disptach(editAddress({
-            userId : user?.id,
-            addressId : currentEditedId, 
-            formData : formData
-        })).then(data=>{
-            
+      e.preventDefault();
+      if(addressList.length >= 3 && currentEditedId === null){
+        setFormData(initialAddressFormData)
+        toast.warning("You Can Add max 3 Addresses")
+        return; 
+      }
 
-        }): n
+  if (currentEditedId !== null) {
+    // EDIT MODE
+    disptach(editAddress({
+      userId: user?.id,
+      addressId: currentEditedId,
+      formData
+    })).then(data => {
+      if (data?.payload?.success) {
+        disptach(fetchAllAddress(user?.id));
+        setcurrentEditedId(null);
+        setFormData(initialAddressFormData);
+        toast.success("Address Updated Successfully")
+      }
+    });
+  } else {
+    // ADD MODE
     disptach(addNewAddress({
-        ...formData,
-        userId : user?.id
-    })).then(data=>{
-        // console.log(data);
-        if(data?.payload?.success){
-            disptach(fetchAllAddress(user?.id))
-            setFormData(initialAddressFormData)
-        }
-        
-    })
+      ...formData,
+      userId: user?.id,
+    })).then(data => {
+      if (data?.payload?.success) {
+        disptach(fetchAllAddress(user?.id));
+        setFormData(initialAddressFormData);
+        toast.success("Address Added Successfully")
+
+      }
+    });
+  }
 };
+
 
     const handleDelteAddress = (getCurrentAddress)=>{
         disptach(deleteAddress({userId : user?.id, addressId: getCurrentAddress._id})).then(data=>{
             if(data?.payload?.success){
                 disptach(fetchAllAddress(user?.id))
+                toast.success("Address Deleted Successfully")
+
             }
         })
         
