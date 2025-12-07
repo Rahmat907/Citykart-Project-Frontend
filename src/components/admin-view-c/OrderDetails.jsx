@@ -4,7 +4,8 @@ import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import CommonForm from "../common/form";
 import { Badge } from "../ui/badge";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllOrdersForAdmin, getOrderDetailsForAdmin, updateOrderDetailsForAdmin } from "@/store/admin-store/Order-slice";
 
 const initialFormData ={
     status : ""
@@ -13,8 +14,23 @@ const initialFormData ={
 const AdminOrderDetails = ({orderDetails}) => {
     const [formData,setFormData]=useState(initialFormData)
   const {user} = useSelector(state => state.auth)
+  const dispatch = useDispatch();
+
+
     const handleUpdateStatus = (e) => {
         e.preventDefault()
+        // console.log("the formdata", formData);
+        const {status} = formData;   
+        // console.log("This id is", orderDetails?._id);
+           
+      dispatch(updateOrderDetailsForAdmin({id : orderDetails?._id, orderStatus : status})).then(data =>{
+      if(data?.payload?.success){
+        dispatch(getOrderDetailsForAdmin(orderDetails?._id))
+        dispatch(getAllOrdersForAdmin())
+        setFormData(initialFormData)
+      }
+        
+      })
     }
   return (
     <DialogContent className= 'sm:max-w-[600px] max-h-[90vh] overflow-y-auto'>
@@ -25,7 +41,7 @@ const AdminOrderDetails = ({orderDetails}) => {
             <Label>{orderDetails?._id}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Date</p>
+            <p className="font-medium">Order Datee</p>
            <Label>{orderDetails?.orderData.split("T")[0]}</Label>
 
           </div>
@@ -44,9 +60,14 @@ const AdminOrderDetails = ({orderDetails}) => {
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Status</p>
-            <Label><Badge className='py-1 px-3 bg-green-500'>
-              {orderDetails?.orderStatus} 
-              </Badge>
+            <Label>{
+              orderDetails?.orderStatus === 'confirmed' ? <Badge  className='bg-green-500' >Confirmed</Badge> :
+              orderDetails?.orderStatus === 'pending' ? <Badge className='bg-black'>Pending</Badge> :
+              orderDetails?.orderStatus === 'inprogress' ? <Badge className='bg-blue-500' >In Progress</Badge> :
+              orderDetails?.orderStatus === 'inshipping' ? <Badge className='bg-gray-500'>In Shipping</Badge> :
+              orderDetails?.orderStatus === 'delivered' ? <Badge className='bg-green-500' >Delivered</Badge> :
+              <Badge variant="destructive">Rejected</Badge>
+            }
               </Label>
           </div>
         </div>

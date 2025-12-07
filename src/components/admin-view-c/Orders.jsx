@@ -1,40 +1,49 @@
- import React, { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
-import { Button } from '../ui/button'
-import { Dialog } from '../ui/dialog'
-import AdminOrderDetails from './OrderDetails'
-import { useDispatch, useSelector } from 'react-redux'
-import { getAllOrdersForAdmin, getOrderDetailsForAdmin, resetOrderDetails } from '@/store/admin-store/Order-slice'
-import { restOrderDetails } from '@/store/shop/Order-slice'
-import { Badge } from '../ui/badge'
- 
- const AdminOrders = () => {
-    const[openDetailsDialog,setopenDetailsDialog] = useState(false);
-    const {orderList, orderDetails} = useSelector(state => state.adminOrder);
-    const dispatch = useDispatch();
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import { Button } from "../ui/button";
+import { Dialog } from "../ui/dialog";
+import AdminOrderDetails from "./OrderDetails";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllOrdersForAdmin,
+  getOrderDetailsForAdmin,
+  resetOrderDetails,
+} from "@/store/admin-store/Order-slice";
+import { restOrderDetails } from "@/store/shop/Order-slice";
+import { Badge } from "../ui/badge";
 
-    const handleFetchOrderDetails = (getId)=>{
-      dispatch(getOrderDetailsForAdmin(getId))
-    }
+const AdminOrders = () => {
+  const [openDetailsDialog, setopenDetailsDialog] = useState(false);
+  const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
+  const dispatch = useDispatch();
 
-    useEffect(()=>{
-      dispatch(getAllOrdersForAdmin())
-    },[dispatch])
+  const handleFetchOrderDetails = (getId) => {
+    dispatch(getOrderDetailsForAdmin(getId));
+  };
 
-    // console.log("The detail list" , orderDetails);
-    useEffect(()=>{
-      if(orderDetails !== null) setopenDetailsDialog(true)
-    },[orderDetails])
-    
-   return (
-     <Card>
+  useEffect(() => {
+    dispatch(getAllOrdersForAdmin());
+  }, [dispatch]);
+
+  // console.log("The detail list" , orderDetails);
+  useEffect(() => {
+    if (orderDetails !== null) setopenDetailsDialog(true);
+  }, [orderDetails]);
+
+  return (
+    <Card>
       <CardHeader>
-        <CardTitle>
-          All Orders
-        </CardTitle>
+        <CardTitle>All Orders</CardTitle>
       </CardHeader>
-       <CardContent>
+      <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
@@ -42,18 +51,31 @@ import { Badge } from '../ui/badge'
               <TableHead>Order Date</TableHead>
               <TableHead>Order Status</TableHead>
               <TableHead>Order Price</TableHead>
-              <TableHead><span className='sr-only'>Details</span></TableHead>
+              <TableHead>
+                <span className="sr-only">Details</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-          
-             {orderList && orderList.length > 0
+            {orderList && orderList.length > 0
               ? orderList.map((orderItem) => (
                   <TableRow>
                     <TableCell>{orderItem?._id}</TableCell>
                     <TableCell>{orderItem?.orderData.split("T")[0]}</TableCell>
                     <TableCell>
-                      <Badge className='py-1 px-3 bg-green-500' >{orderItem?.orderStatus}</Badge>
+                      {orderItem?.orderStatus === "confirmed" ? (
+                        <Badge className="bg-green-500">Confirmed</Badge>
+                      ) : orderItem?.orderStatus === "pending" ? (
+                        <Badge className="bg-black">Pending</Badge>
+                      ) : orderItem?.orderStatus === "inprogress" ? (
+                        <Badge className='bg-blue-500'>In Progress</Badge>
+                      ) : orderItem?.orderStatus === "inshipping" ? (
+                        <Badge className='bg-gray-500'>In Shipping</Badge>
+                      ) : orderItem?.orderStatus === "delivered" ? (
+                        <Badge  className='bg-green-500'>Delivered</Badge>
+                      ) : (
+                        <Badge variant="destructive">Rejected</Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       {"\u20B9"}
@@ -62,17 +84,19 @@ import { Badge } from '../ui/badge'
                     <TableCell>
                       <Dialog
                         open={openDetailsDialog}
-                        onOpenChange={()=>{
-                          setopenDetailsDialog(false)
-                          dispatch(resetOrderDetails())
+                        onOpenChange={() => {
+                          setopenDetailsDialog(false);
+                          dispatch(resetOrderDetails());
                         }}
                       >
                         <Button
-                         onClick={() => handleFetchOrderDetails(orderItem?._id)}
-                         >
+                          onClick={() =>
+                            handleFetchOrderDetails(orderItem?._id)
+                          }
+                        >
                           View Details
                         </Button>
-                        <AdminOrderDetails orderDetails = {orderDetails} />
+                        <AdminOrderDetails orderDetails={orderDetails} />
                       </Dialog>
                     </TableCell>
                   </TableRow>
@@ -82,8 +106,7 @@ import { Badge } from '../ui/badge'
         </Table>
       </CardContent>
     </Card>
-   )
- }
- 
- export default AdminOrders
- 
+  );
+};
+
+export default AdminOrders;
