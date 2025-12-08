@@ -130,7 +130,7 @@ const ShoppingHeader = () => {
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         <Link to={"/shop/home"}>
           {/* <HousePlug className='h-6 w-6' /> */}
-          <img src={logo} alt="logo" className="h-6" />
+          <img src={logo} alt="logo" className="h-9"  />
         </Link>
 
         <Sheet>
