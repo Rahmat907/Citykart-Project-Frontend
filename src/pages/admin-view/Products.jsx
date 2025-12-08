@@ -62,7 +62,7 @@ const AdminProduct = () => {
             image: uploadedImage,
           })
         ).then((data) => {
-          console.log(data);
+          // console.log(data);
           if (data?.payload?.success) {
             dispatch(fetchAllProducts());
             setimageFile(null);
@@ -90,12 +90,12 @@ const AdminProduct = () => {
     dispatch(fetchAllProducts());
   }, [dispatch]);
 
-  console.log(
-    "This is productlis",
-    productList,
-    "This is image URl",
-    uploadedImage
-  );
+  // console.log(
+  //   "This is productlis",
+  //   productList,
+  //   "This is image URl",
+  //   uploadedImage
+  // );
 
   return (
     <Fragment>

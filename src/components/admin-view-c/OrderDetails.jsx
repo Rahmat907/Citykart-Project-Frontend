@@ -19,13 +19,12 @@ const initialFormData = {
 const AdminOrderDetails = ({ orderDetails }) => {
   const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
+  
   const dispatch = useDispatch();
-
+ 
   const handleUpdateStatus = (e) => {
     e.preventDefault();
-    // console.log("the formdata", formData);
     const { status } = formData;
-    // console.log("This id is", orderDetails?._id);
 
     dispatch(
       updateOrderDetailsForAdmin({ id: orderDetails?._id, orderStatus: status })
@@ -109,7 +108,7 @@ const AdminOrderDetails = ({ orderDetails }) => {
           <div className="grid gap-2">
             <div className="font-medium">Shipping Info</div>
             <div className="grid gap-0.5 text-muted-foreground">
-              <span>{user.username} </span>
+              <span>{orderDetails?.username ||  user.username} </span>
               <span>{orderDetails?.addressInfo?.address} </span>
               <span>{orderDetails?.addressInfo?.city}</span>
               <span>{orderDetails?.addressInfo?.pincode}</span>

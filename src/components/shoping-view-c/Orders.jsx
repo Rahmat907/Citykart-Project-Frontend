@@ -36,7 +36,7 @@ const ShoppingOrders = () => {
   useEffect(() => {
     if (orderDetails !== null) setopenDetailsDialog(true);
   }, [orderDetails]);
-  console.log("order List", orderDetails);
+  // console.log("order List", orderDetails);
 
   return (
     <Card>
