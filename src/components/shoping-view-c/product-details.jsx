@@ -1,20 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { StarIcon } from "lucide-react";
-import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
+import axios from "axios";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { setProductDetails } from "@/store/shop/product-slice";
+import { Textarea } from "../ui/textarea";
 
 const ProductDetailsDialogue = ({ open, setOpen, productDetails }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+
+  const [aiQuestion, setAiQuestion] = useState("");
+  const [aiAnswer, setAiAnswer] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleAddtoCart = (getCurrentId) => {
-    // console.log(getCurrentId);
     dispatch(
       addToCart({ userId: user?.id, productId: getCurrentId, quantity: 1 })
     ).then((data) => {
@@ -25,14 +30,43 @@ const ProductDetailsDialogue = ({ open, setOpen, productDetails }) => {
     });
   };
 
+  const handleAskAI = async () => {
+    if (!aiQuestion.trim()) return toast.error("Please type your question");
+
+    try {
+      setLoading(true);
+      setAiAnswer("");
+
+      const { data } = await axios.post(
+        "http://localhost:5000/api/shop/ai/askai",
+        {
+          productId: productDetails?._id,
+          question: aiQuestion,
+        }
+      );
+
+      setAiAnswer(data.reply);
+      setAiQuestion("");
+    } catch (err) {
+      console.log(err);
+      toast.error("AI could not answer now. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDialogClose = () => {
     setOpen(false);
+    setAiAnswer("");
+    setAiQuestion("");
     dispatch(setProductDetails());
   };
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="grid grid-cols-2 gap-8 sm:p-12 max-w-[80vw] lg:max-w-[70vw]">
+        
+        {/* IMAGE */}
         <div className="relative overflow-hidden rounded-lg">
           <img
             src={productDetails?.image}
@@ -43,74 +77,62 @@ const ProductDetailsDialogue = ({ open, setOpen, productDetails }) => {
           />
         </div>
 
-        <div className="">
-          <div>
-            <h1 className="text-3xl font-extrabold">{productDetails?.title}</h1>
-            <p className="text-muted-foreground text-2xl mb-5 mt-4 ">
-              {productDetails?.description}
-            </p>
-          </div>
+        {/* RIGHT SIDE CONTENT */}
+        <div>
+          <h1 className="text-3xl font-extrabold">{productDetails?.title}</h1>
+          <p className="text-muted-foreground text-2xl mb-5 mt-4 ">
+            {productDetails?.description}
+          </p>
+
           <div className="flex items-center justify-between">
-            <p
-              className={`text-3xl font-bold text-primary ${
-                productDetails?.salePrice > 0 ? "line-through" : ""
-              }`}
-            >
-              {"\u20B9"} {productDetails?.price}
+            <p className="text-3xl font-bold text-primary">
+              ₹ {productDetails?.price}
             </p>
-            {productDetails?.salePrice > 0 ? (
-              <p className="text-2xl font-bold text-muted-foreground">
-                {"\u20B9"} {productDetails?.salePrice}
-              </p>
-            ) : null}
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-0.5 mt-2">
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-            </div>
-            <span className="text-muted-foreground">(4.5)</span>
-          </div>
-          <div className="mt-5 mb-5">
-            <Button
+          <div className="flex items-center gap-2 mt-3">
+  <div className="flex items-center gap-0.5">
+    <StarIcon className="w-5 h-5 fill-primary" />
+    <StarIcon className="w-5 h-5 fill-primary" />
+    <StarIcon className="w-5 h-5 fill-primary" />
+    <StarIcon className="w-5 h-5 fill-primary" />
+    <StarIcon className="w-5 h-5 fill-primary" />
+  </div>
+  <span className="text-muted-foreground">(4.5)</span>
+</div>
+
+          <Button
             disabled={productDetails?.totalStock === 0}
-              className="w-full"
-              onClick={() => handleAddtoCart(productDetails?._id)}
-            >
-              Add to Cart
-            </Button>
-          </div>
+            className="w-full mt-4 mb-4"
+            onClick={() => handleAddtoCart(productDetails?._id)}
+          >
+            Add to Cart
+          </Button>
+
           <Separator />
-          <div className="max-h-[300px] overflow-auto">
-            <h2 className="text-xl font-bold mb-4">Reviews</h2>
-            <div className="grid gap-6">
-              <div className="flex gap-4 ">
-                <Avatar className="w-10 h-10 border ">
-                  <AvatarFallback>R</AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1 ">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold">Rahmat</h3>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                    <StarIcon className="w-5 h-5 fill-primary" />
-                  </div>
-                  <p className="text-muted-foreground">
-                    This is an awesome product
-                  </p>
-                </div>
+
+          
+          <div className="mt-5">
+            <h2 className="text-xl font-bold mb-3">Ask with AI</h2>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2">
+                <Textarea
+                  placeholder="Ask about this product..."
+                  className="h-15"
+                  value={aiQuestion}
+                  onChange={(e) => setAiQuestion(e.target.value)}
+                />
+                <Button onClick={handleAskAI} disabled={loading}>
+                  {loading ? "Thinking..." : "Send"}
+                </Button>
               </div>
-            </div>
-            <div className="mt-6 flex gap-2">
-              <Input placeholder="Write a review ..." />
-              <Button>Submit</Button>
+
+              {aiAnswer && (
+                <div className="p-3 rounded-lg border bg-muted text-sm whitespace-pre-line">
+                  <p className="font-medium mb-1">AI Reply:</p>
+                  <p>{aiAnswer}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
