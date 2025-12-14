@@ -37,7 +37,7 @@ const ProductDetailsDialogue = ({ open, setOpen, productDetails }) => {
       setAiAnswer("");
 
       const { data } = await axios.post(
-        "http://localhost:5000/api/shop/ai/askai",
+        `${import.meta.env.VITE_API_URL}/api/shop/ai/askai`,
         {
           productId: productDetails?._id,
           question: aiQuestion,

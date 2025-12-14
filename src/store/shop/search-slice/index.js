@@ -10,7 +10,7 @@ export const getSearchResults = createAsyncThunk(
   "/order/getSearchResults",
   async (keyword) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/search/${keyword}`  
+      `${import.meta.env.VITE_API_URL}/api/shop/search/${keyword}`  
     );
     return response.data;
   }
@@ -41,5 +41,5 @@ const searchSlice =  createSlice({
 }
 )
 
-  export const {resetSearchResults} = searchSlice.actions;
+export const {resetSearchResults} = searchSlice.actions;
 export default searchSlice.reducer;

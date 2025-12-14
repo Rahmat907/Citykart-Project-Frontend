@@ -12,7 +12,7 @@ export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
   async (orderData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/shop/order/create",
+      `${import.meta.env.VITE_API_URL}/api/shop/order/create`,
       orderData
     );
     return response.data;
@@ -22,7 +22,7 @@ export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
   async ({ paymentId, payerId, orderId }) => {
     const response = await axios.post(
-      "http://localhost:5000/api/shop/order/capture",
+      `${import.meta.env.VITE_API_URL}/api/shop/order/capture`,
       { paymentId, payerId, orderId }
     );
     return response.data;
@@ -33,7 +33,7 @@ export const getAllOrderbyUserId = createAsyncThunk(
   "/order/getAllOrderbyUserId",
   async (userId) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/order/list/${userId}`
+      `${import.meta.env.VITE_API_URL}/api/shop/order/list/${userId}`
     );
     return response.data;
   }
@@ -42,7 +42,7 @@ export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (Id) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/order/details/${Id}`
+      `${import.meta.env.VITE_API_URL}/api/shop/order/details/${Id}`
     );
     return response.data;
   }
