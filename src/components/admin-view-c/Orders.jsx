@@ -17,7 +17,6 @@ import {
   getOrderDetailsForAdmin,
   resetOrderDetails,
 } from "@/store/admin-store/Order-slice";
-import { restOrderDetails } from "@/store/shop/Order-slice";
 import { Badge } from "../ui/badge";
 
 const AdminOrders = () => {
@@ -26,14 +25,13 @@ const AdminOrders = () => {
   const dispatch = useDispatch();
 
   const handleFetchOrderDetails = (getId) => {
-    dispatch(getOrderDetailsForAdmin(getId));
+    dispatch(getOrderDetailsForAdmin(getId)); // 
   };
 
   useEffect(() => {
     dispatch(getAllOrdersForAdmin());
   }, [dispatch]);
 
-  // console.log("The detail list" , orderDetails);
   useEffect(() => {
     if (orderDetails !== null) setopenDetailsDialog(true);
   }, [orderDetails]);
